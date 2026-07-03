@@ -1,0 +1,13 @@
+{
+    "manifest_version": 3,
+    "name": "MindTrack Usage Tracker",
+    "version": "1.0",
+    "description": "Tracks browsing time for wellbeing insights",
+    "permissions": ["tabs", "storage", "activeTab", "alarms"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }

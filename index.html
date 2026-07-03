@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MindTrack Dashboard</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+button {
+  padding: 10px;
+  margin-top: 10px;
+  background: #38bdf8;
+  border: none;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🧠 MindTrack Dashboard</h1>
+
+<div class="card">
+    <input type="file" id="fileInput">
+    <button onclick="loadFile()">Analyze My Usage</button>
+  <pre id="output"></pre>
+</div>
+
+<div class="card" id="stressBox" style="display:none;">
+  <h3>🌿 Stress Result</h3>
+  <p id="stressLevel"></p>
+
+  <h4>✍️ Journaling</h4>
+  <textarea id="journal" style="width:100%;height:100px;"></textarea>
+  <button onclick="saveJournal()">Save</button>
+
+  <p id="saved"></p>
+</div>
+
+<script>
+
+// --------------------
+// LOAD EXTENSION DATA
+// --------------------
+function loadData() {
+  let data = JSON.parse(localStorage.getItem("mindtrack_data"));
+
+  if (!data) {
+    document.getElementById("output").innerText =
+      "No data found. Run extension first.";
+    return;
+  }
+
+  document.getElementById("output").innerText =
+    JSON.stringify(data, null, 2);
+
+  analyze(data);
+}
+
+// --------------------
+// STRESS ENGINE
+// --------------------
+function analyze(data) {
+
+  let score = 0;
+
+  let totalHours = data.totalTime / 3600;
+
+  if (totalHours > 6) score += 2;
+
+  for (let site in data.sites) {
+    let hours = data.sites[site] / 3600;
+
+    if (site.includes("youtube") || site.includes("tiktok")) {
+      if (hours > 2) score += 2;
+    }
+
+    if (hours > 3) score += 2;
+  }
+
+  document.getElementById("stressBox").style.display = "block";
+
+  let text = "";
+
+  if (score <= 2) text = "😊 Low Stress";
+  else if (score <= 4) text = "😐 Mild Stress";
+  else if (score <= 6) text = "😟 High Stress";
+  else text = "🚨 Severe Overload";
+
+  document.getElementById("stressLevel").innerText = text;
+}
+
+// --------------------
+// JOURNALING
+// --------------------
+function saveJournal() {
+  let text = document.getElementById("journal").value;
+  localStorage.setItem("journal", text);
+
+  document.getElementById("saved").innerText =
+    "Saved ✔";
+}
+
+</script>
+
+</body>
+</html>
